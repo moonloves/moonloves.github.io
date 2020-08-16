@@ -6,6 +6,10 @@ permalink: /about/
 
 ## Hello
 
+### Today I have just made github blog.
+### I thank to InBig cuz I always want to make things that visible.
+### As an extention of it, I am going to post HOW TO CREATE GITHUB BLOG
+
 <!--
 ## Theme Monos
 > Simple and lightweight theme for Jekyll
