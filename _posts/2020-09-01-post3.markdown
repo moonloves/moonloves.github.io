@@ -5,20 +5,20 @@ date: 2020-09-01 14:30:00 +0900
 category: sample
 ---
 
-# EMBEDDED SOFTWARE
+# EMBEDDED SOFTWARE :)
 
-### 임베디드 소프트웨어의 정의
-> #### 1. 하드웨어와 소프트웨어의 Combination
+> ### 임베디드 소프트웨어의 정의
+> > #### 1. 하드웨어와 소프트웨어의 Combination
 * 작지만 하드웨어와 소프트웨어를 가지며, 어떤 기능을 수행
 * 예) 컵의 특징을 추정하는 임베디드 시스템
 
 
-> #### 2. Dedicated Function
+> > #### 2. Dedicated Function
 * 특수한 목적을 가짐
 * Dedicated Purpose 예) 휴대전화(통화가 목적), 전자레인지(요리가 목적)
 * 반댓말: General Purpose 예) 컴퓨터
 
-> #### 3. Cross-Development platform(교차개발횐경)
+> > #### 3. Cross-Development platform(교차개발횐경)
 * 프로그래머의 관점에서 임베디드 시스템의 특징
 * 일반 개발 환경: 프로그램 작성 -> 컴파일 -> 러닝
 * 교차 지원 환경: 프로그램 작성 -> 컴파일 -> 다운로딩 -> 러닝
@@ -26,31 +26,31 @@ category: sample
 * Host에서 '개발', Target에서 '수행'
 * Host(PC)와 Target(Eembedded SW)의 연결고리는 cable 및 wireless network, USB
 
-> #### 4. Real-time features (실시간특징)
+> > #### 4. Real-time features (실시간특징)
 * Real time 시스템: 시간에 대한 요구 포함
 * deadline을 놓쳤다면?
   * Hard real-time system: 데드라인 놓쳤을 경우 영향이 재앙적 예) 비행기의 제어시스템
   * Soft real-time system: 데드라인 놓쳐도 영향이 미비 예) 비디오 플레이어
 
-> #### 5. Embedded
+> > #### 5. Embedded
 * 임베디드 시스템은 커다란 시스템에 속한 내장형 시스템
   * PC <- 키보드, 마우스
   * 자동차 <- 브레이크, 대시보드
 
 
-### 널리 퍼진 Embedded System
+> ### 널리 퍼진 Embedded System
 
-> #### 1. Smart Phone
+> > #### 1. Smart Phone
 * CPU의 성능이 향상됨에 따라 smart phone의 성능도 향상
 * general purpose에 가까워졌지만, cross development가 필요하다는 점에서 여전히 embedded system
 
-> #### 2. IoT
+> > #### 2. IoT
 * 디바이스에 인터넷 기능을 넣어 통신이 가능하게 함으로써 디바이스들이 효과적으로 제어되도록 함
 
 
-### Embedded Software Architecture
+> ### Embedded Software Architecture
 
-> #### Device Handling 과정(선수지식)
+> > #### Device Handling 과정(선수지식)
 
 임베디드 소프트웨어의 구성
 
@@ -68,11 +68,11 @@ category: sample
 * 시간이 오래 소요됨
 
 
-#### Embedded Hardware에 적절한 Software인지, Application에 적절한 Software인지에 따라 5개 중 선택하여 사용
+> > #### Embedded Hardware에 적절한 Software인지, Application에 적절한 Software인지에 따라 5개 중 선택하여 사용
 
 #### 1~5까지 점차 업그레이드
 
-> #### 1. Round-robin
+> > #### 1. Round-robin
 * 가장 간단한 임베디드 소프트웨어 아키텍쳐로, 간단한 임베디드는 이를 사용
 * device check routine과 data processing routine이 번갈아가며 수행
 * 단점: 마지막 디바이스의 device check routine이 수행되기까지 오랜 시간이 소요됨 (=device check routine의 수행이 지연될 수 있음)
@@ -99,7 +99,7 @@ while(1) {
 </pre>
 
 
-> #### 2. Round-robin with interrupt
+> > #### 2. Round-robin with interrupt
 * round-robin의 문제점 해결
 * ISR이 task routine보다 우선순위가 높음
 * ISR에서 우선순위를 가질 수 있음
@@ -143,11 +143,11 @@ ISR C : Set flag C
     * device check routine과 task routine이 번갈아가며 수행
 
 
-> #### 3. Function queue scheduling
+> > #### 3. Function queue scheduling
 
 
-> #### 4. Real-time operating system
+> > #### 4. Real-time operating system
 
 
 
-> #### 5. Embedded Linux
+> > #### 5. Embedded Linux
