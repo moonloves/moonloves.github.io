@@ -97,7 +97,7 @@ while(1) {
 </pre>
 
 
-> > #### 2. Round-robin with interrupt
+> #### 2. Round-robin with interrupt
 * round-robin의 문제점 해결
 * ISR이 task routine보다 우선순위가 높음
 * ISR에서 우선순위를 가질 수 있음
@@ -128,8 +128,8 @@ ISR A : Set flag A
 ISR B : Set flag B
 ISR C : Set flag C
 
-</pre>
 </code>
+</pre>
 
 
 > * Round-robin vs. Round-robin with interrupt
