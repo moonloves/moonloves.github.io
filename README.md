@@ -4,11 +4,9 @@ title: About
 permalink: /about/
 ---
 
-## Hello
+## Hello Nice to meet You :)
 
-### Today I have just made github blog.
-### I thank to InBig cuz I always want to make things visible.
-### As an extention of it, I am going to post HOW TO CREATE GITHUB BLOG
+<img src="images/me.jpg" width="300" height="500">
 
 <!--
 ## Theme Monos
