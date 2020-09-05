@@ -36,10 +36,11 @@
   	<ul class="nav">
 			<li class="nav-title">Categories</li> <!--카테고리명 수정가능-->
 	    {% for category in site.categories %}
-	    <li>
+	    <li> <!--이 코드 내에 Smaple, Jekyll, Update 카테고리가 포함되어 있음-->
 	    	<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
 				<span class="name">{{ category | first }}</span>
 				<span class="badge">{{ category | last | size }}</span>
+				<span class="badge">{{ category | last | size }}</span> <!--이거 추가해봤음-->
 	    	</a>
 		 </li>
 	    {% endfor %}
@@ -48,6 +49,6 @@
 </div>
 
 <div class="sidebar-item sidebar-footer">
-	<p>Contact here <a href="moonji980320@gmail.com">moonji980320@gmail.com</a></p>
+	<p>Contact here moonji980320@gmail.com</a></p>
 	<p>Powered by <a href="https://github.com/jekyll/jekyll">Jekyll</a></p>
 </div>
