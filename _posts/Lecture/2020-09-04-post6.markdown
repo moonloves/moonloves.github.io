@@ -2,7 +2,7 @@
 layout: post
 title: DOM서버의 입출력 방법(시간초과 및 컴파일러 관련)
 date: 2020-09-04 12:36:00 +0900
-category: sample
+category: lecture
 ---
 
 > ### rule1. c++과 c 언어를 혼용하여 사용 금지
