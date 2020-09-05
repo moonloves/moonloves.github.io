@@ -35,14 +35,31 @@
 <div class="sidebar-item sidebar-nav">
   	<ul class="nav">
 			<li class="nav-title">Categories</li> <!--카테고리명 수정가능-->
-	    {% for category in site.categories %}
-	    <li> <!--이 코드 내에 Smaple, Jekyll, Update 카테고리가 포함되어 있음-->
+		{% for category in site.categories %}
+		
+		<li><a href="{{ site.baseurl }}/">Home</a></li>
+            <li><a href="{{ site.baseurl }}/Announce.html">Announce</a></li>
+            <li><a href="{{ site.baseurl }}/Basic.html">Basic</a></li>
+            <li><a href="{{ site.baseurl }}/Data_visualization.html">Data visualization</a></li>
+            <li><a href="{{ site.baseurl }}/ML.html">ML</a></li>
+
+
+
+            {% for page in site.pages %}
+                  {% if page.title %}
+                    <li><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
+                  {% endif %}
+            {% endfor %}
+            <li><a href="{{ site.baseurl }}/Members.html" class="button special">Members</a></li>
+        
+	    <!--
+			<li> 
 	    	<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
-				<span class="name">{{ category | first }}</span>
+				<span class="name">{{ category | first }}</span> 
 				<span class="badge">{{ category | last | size }}</span>
-				<span class="badge">{{ category | last | size }}</span> <!--이거 추가해봤음-->
 	    	</a>
 		 </li>
+		-->
 	    {% endfor %}
 	  </nav>
 	</ul>
