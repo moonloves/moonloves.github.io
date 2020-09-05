@@ -6,7 +6,7 @@ permalink: /about/
 
 ## Hello Nice to meet You :)
 
-<img src="images/me.jpg" width="300" height="500">
+<img src="moonloves.github.io\images\me.jpg" width="300" height="500">
 
 <!--
 ## Theme Monos
