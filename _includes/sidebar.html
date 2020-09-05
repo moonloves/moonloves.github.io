@@ -39,10 +39,17 @@
 	    <li>
 	    	<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
 				<span class="name">{{ category | first }}</span>
-				<span class="name">{{ category | first }}</span> <!--이거 추가했ㄷ음-->
 				<span class="badge">{{ category | last | size }}</span>
 	    	</a>
- 		</li>
+		 </li>
+		 
+		 <li> <!--이거 추가햇음-->
+	    	<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
+				<span class="name">{{ category | first }}</span>
+				<span class="badge">{{ category | last | size }}</span>
+	    	</a>
+		 </li>
+		 
 	    {% endfor %}
 	  </nav>
 	</ul>
