@@ -6,7 +6,7 @@ permalink: /about/
 
 ## Hello Nice to meet You :)
 
-<img src="me.jpg" width="300" height="500">
+![alt text](/public/img/me.png)
 
 <!--
 ## Theme Monos
