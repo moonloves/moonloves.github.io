@@ -35,29 +35,17 @@
 <div class="sidebar-item sidebar-nav">
   	<ul class="nav">
 			<li class="nav-title">Categories</li> <!--카테고리명 수정가능-->
+		
+		
 		{% for category in site.categories %}
 		
-		<li><a href="{{ site.baseurl }}/">Home</a></li>
-            <li><a href="{{ site.baseurl }}/Algorithm.html">Algorithm</a></li>
-            <li><a href="{{ site.baseurl }}/ML.html">ML</a></li>
-            <li><a href="{{ site.baseurl }}/Lecture.html">Lecture</a></li>
-
-		<!--
-            {% for page in site.pages %}
-                  {% if page.title %}
-                    <li><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
-                  {% endif %}
-            {% endfor %}
-            <li><a href="{{ site.baseurl }}/Members.html" class="button special">Members</a></li>
-        -->
-	    <!--
-			<li> 
-	    	<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
+		<li>
+			<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
 				<span class="name">{{ category | first }}</span> 
 				<span class="badge">{{ category | last | size }}</span>
 	    	</a>
-		 </li>
-		-->
+		</li>
+
 	    {% endfor %}
 	  </nav>
 	</ul>
