@@ -9,8 +9,8 @@ category: Algorithm
 
 ```ruby
 
-    #include <iostream>
-    #include <string>
+#include <iostream>
+#include <string>
 using namespace std;
 
 int N, x;
