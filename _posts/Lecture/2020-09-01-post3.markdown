@@ -2,7 +2,7 @@
 layout: post
 title: Embedded Software
 date: 2020-09-01 14:30:00 +0900
-category: sample
+category: Lecture
 ---
 
 # EMBEDDED SOFTWARE :)
