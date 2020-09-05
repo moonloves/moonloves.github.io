@@ -6,9 +6,9 @@ permalink: /about/
 
 ## Hello Nice to meet You :)
 
-![alt text](/public/img/me.png)
 
-<!--
+
+
 ## Theme Monos
 > Simple and lightweight theme for Jekyll
 
@@ -36,4 +36,3 @@ date_format: "%Y-%M-%D" //and date format.
 ![alt text](/public/img/screenshot-m1.png)
 #### Page - Articles
 ![alt text](/public/img/screenshot-m2.png)
--->
