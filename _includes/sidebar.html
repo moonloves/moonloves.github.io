@@ -13,7 +13,7 @@
 
 <div class="sidebar-item sidebar-nav">
 	<ul class="nav">
-      <li class="nav-title">Pages</li>
+      <li class="nav-title">Pages</li> <!--카테고리명 수정가능-->
 	  <li>
 	  	<a class="nav-item" href="/">Articles</a>
 	  </li>
@@ -34,11 +34,12 @@
 
 <div class="sidebar-item sidebar-nav">
   	<ul class="nav">
-			<li class="nav-title">Categoriessss</li>
+			<li class="nav-title">Categories</li> <!--카테고리명 수정가능-->
 	    {% for category in site.categories %}
 	    <li>
 	    	<a class="nav-item" href="{{ root_url }}/{{ site.category_dir }}#{{ category | first }}">
 				<span class="name">{{ category | first }}</span>
+				<span class="name">{{ category | first }}</span> <!--이거 추가했ㄷ음-->
 				<span class="badge">{{ category | last | size }}</span>
 	    	</a>
  		</li>
