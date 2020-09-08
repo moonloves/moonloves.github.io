@@ -48,7 +48,7 @@ int main() {
 			cout << size << "\n";
 		}
 		else if (cmd == "empty") {
-			if (size == 0) { // 스택이 비어있으면
+			if (size == 0) {
 				cout << 1 << "\n";
 			}
 			else {

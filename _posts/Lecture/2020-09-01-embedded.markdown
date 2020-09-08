@@ -1,0 +1,289 @@
+---
+layout: post
+title: Embedded Software
+date: 2020-09-01 14:30:00 +0900
+category: Lecture
+---
+
+# EMBEDDED SOFTWARE :)
+
+## 임베디드 소프트웨어의 정의
+> #### 1. 하드웨어와 소프트웨어의 Combination
+* 작지만 하드웨어와 소프트웨어를 가지며, 어떤 기능을 수행
+* 예) 컵의 특징을 추정하는 임베디드 시스템
+
+
+> #### 2. Dedicated Function
+* 특수한 목적을 가짐
+* Dedicated Purpose 예) 휴대전화(통화가 목적), 전자레인지(요리가 목적)
+* 반댓말: General Purpose 예) 컴퓨터
+
+> #### 3. Cross-Development platform(교차개발횐경)
+* 프로그래머의 관점에서 임베디드 시스템의 특징
+* 일반 개발 환경: 프로그램 작성 -> 컴파일 -> 러닝
+* 교차 지원 환경: 프로그램 작성 -> 컴파일 -> 다운로딩 -> 러닝
+* 이 때, 프로그램 작성과 컴파일은 Host에서, 다운로딩과 러닝은 Target에서 수행
+* Host에서 '개발', Target에서 '수행'
+* Host(PC)와 Target(Eembedded SW)의 연결고리는 cable 및 wireless network, USB
+
+> #### 4. Real-time features (실시간특징)
+* Real time 시스템: 시간에 대한 요구 포함
+* deadline을 놓쳤다면?
+  * Hard real-time system: 데드라인 놓쳤을 경우 영향이 재앙적 예) 비행기의 제어시스템
+  * Soft real-time system: 데드라인 놓쳐도 영향이 미비 예) 비디오 플레이어
+
+> #### 5. Embedded
+* 임베디드 시스템은 커다란 시스템에 속한 내장형 시스템
+  * PC <- 키보드, 마우스
+  * 자동차 <- 브레이크, 대시보드
+
+
+### 널리 퍼진 Embedded System
+
+> #### 1. Smart Phone
+* CPU의 성능이 향상됨에 따라 smart phone의 성능도 향상
+* general purpose에 가까워졌지만, cross development가 필요하다는 점에서 여전히 embedded system
+
+> #### 2. IoT
+* 디바이스에 인터넷 기능을 넣어 통신이 가능하게 함으로써 디바이스들이 효과적으로 제어되도록 함
+
+
+### Embedded Software Architecture
+
+> #### Device Handling 과정(선수지식)
+
+임베디드 소프트웨어의 구성
+
+1. Device check routine
+* 디바이스를 케어함
+* interrupt service routine(ISR), interrupt handler라고도 불림
+  * handler를 빠르게 수행하는 것이 중요
+  * 가능한 한 짧은 기간동안 수행하는 것이 중요
+  * 즉각적인 반응을 요구
+* 외부 디바이스(센서, 다른 디바이스 등)으로부터 얻은 데이터를 처리
+
+2. Data processing routine
+* 디바이스로부터 얻은 데이터를 연산 및 처리
+* task routine이라고도 불림
+* 시간이 오래 소요됨
+
+
+> #### Embedded Hardware에 적절한 Software인지, Application에 적절한 Software인지에 따라 5개 중 선택하여 사용
+#### 1~5까지 점차 업그레이드
+
+> #### 1. Round-robin
+* 가장 간단한 임베디드 소프트웨어 아키텍쳐로, 간단한 임베디드는 이를 사용
+* device check routine과 data processing routine이 번갈아가며 수행
+* 단점: 마지막 디바이스의 device check routine이 수행되기까지 오랜 시간이 소요됨 (=device check routine의 수행이 지연될 수 있음)
+```ruby
+while(1) {
+    if (Device A needs service)
+        take care of A; -> Device check routine(ISR)
+        process data from A; -> Data processing routine
+
+    if (Device B needs service)
+        take care of B; -> Device check routine
+        process data from B; -> Data processing routine
+    
+    ...
+
+    if (Device J needs service)
+        take care of J; -> Device check routine
+        process data from J; -> Data processing routine
+    
+}
+```
+
+
+> #### 2. Round-robin with interrupt
+* round-robin의 문제점 해결
+* ISR이 task routine보다 우선순위가 높음
+* ISR에서 우선순위를 가질 수 있음
+* 모든 task code는 같은 우선순위를 갖기 때문에, FIFO 순서로 수행됨
+* 방법
+  * interrupt service routine을 별도의 함수로 구현
+  * 해당 디바이스의 input 데이터가 도착했을 경우에 flag를 셋팅
+  * 메인에서는 flag의 셋팅 여부를 체크
+  * 셋팅 되었을 경우에 해당 device check routine에 해당하는 task routine을 수행하도록 지원
+  * 따라서 디바이스와 연관된 루틴이 매우 빠르게 수행이 가능하게 됨.
+* interrupt service의 빠른 수행 가능
+  * interrupt service routine이 별도의 함수로 구현됨
+  * interrupt service routine이 task routine을 포함하는 main loop보다 우선순위가 높음
+```ruby
+while(1) {
+    if (A flag is set)
+        A task code
+    if (B flag is set)
+        B task code
+    if (C flag is set)
+        C task code
+}
+
+ISR A : Set flag A
+ISR B : Set flag B
+ISR C : Set flag C
+
+```
+
+
+> * Round-robin vs. Round-robin with interrupt
+  * 임베디드 소프트웨어의 구성(device check routine과 task routine의 차이를 잘 이해)
+  * Round-robin with interrupt
+    * ISR을 별도의 함수로 구현
+    * flag를 만들어 task routine보다 device check routine의 우선순위를 높임
+  * Round-robin
+    * device check routine과 task routine이 번갈아가며 수행
+
+
+
+> #### 3. Function queue scheduling
+* Round-robin with interrupt의 문제점: task routine이 루프 안에 있기 때문에 긴박한 task를 먼저 수행할 수 없음
+  * Function queue scheduling: task 간의 우선순위를 부여함으로써 이를 해결한 스케줄링 기법
+* Round-robin with interrupt와 같은 점: interrupt service routine > task
+  * flag의 역할
+* Round-robin with interrupt와 다른 점: task 간에도 우선순위가 있음
+  * task를 function으로 구현
+* 동작 방식
+```ruby
+while(1) {
+    Examine the function queue (function queue를 살펴보고 수행)
+    and then perform the highest-priority function;
+}
+
+ISR A : Set flag A
+ISR B : Set flag B
+ISR C : Set flag C
+
+```
+* 해당 function을 function queue에 삽입하는 연산을 수행
+* 동작 순서: ISR -> function queue에 삽입 -> ISR -> function queue에 삽입 -> ... -> function queue 순서대로 task 수행
+* Function queue scheduling의 문제점: No preemption
+  * 새치기 금지
+  * 우선순위가 더 높은 task가 들어와도, 기존에 수행되던 function이 수행되어야함
+  * 긴박한 task의 수행이 지연될 수 있음
+
+
+
+> #### 4. Real-time operating system
+* Function queue scheduling 문제점을 해결
+  * task 간의 Preemption 지원
+* task 간의 우선순위는 누가 결정? -> scheduler
+  * 모든 task들이 정해진 deadline 내에 수행이 완료되도록 스케줄링
+
+
+
+> #### 5. Embedded Linux
+* 리눅스는 원래 데스크탑 시장을 위해 개발되어 사용되었는데, 임베디드 시장에도 급속도로 확산되고 있음
+* Desktop Linux를 Embedded System에 적합하도록 최소화한 것
+* Desktop Linux에 필요한 많은 component를 제거하고, 성능이 낮고 저장 용량이 작은 embedded system에 적합하도록 Linux를 최소화하여 설계, 구현한 것
+* 장점
+  * Open source
+  * 많은 utilities
+  * low cost 등등
+* Embedded Linux vs Desktop Linux
+  * 1. size
+    * kernel에서 불필요한 요소를 제거하여 사이즈 최적화
+  * 2. kernel configuration
+    * kernel에서 불필요한 요소를 제거한 것
+  * 3. Utilities
+    * 교차 개발 환경을 위한 utility가 추가됨
+    * flash 메모리를 위한 device driver 추가
+  * 4. GUI tools
+* 임베디드 리눅스를 RTOS에 맞도록 개발하는 프로젝트들이 진행되고 있음
+
+
+> ### Embedded Software Architecture 5가지 비교
+1. Round-robin
+* while 루프에서 수행되는 순서대로 프로그램이 진행
+* ISR -> task -> ISR -> task -> ...
+  * interrupt service routine은 prompt processing임에도 불구하고 task루틴이 interrupt service routine보다 먼저 수행될 수 있음
+* task의 우선순위나 interrupt service routine의 우선순위가 상관 없을 때 사용
+2. Round-rogin with interrupt
+* ISR > task
+* ISR -> ISR -> ISR -> ... -> task -> task -> task
+* task 간의 우선순위X
+3. Function queue scheduling
+* ISR > task
+* ISR -> ISR -> ISR -> ... -> task -> task -> task
+* task 간의 우선순위O
+  * task가 function 형태로 구현
+* task 간 preemption 지원X
+4. RTOS (Real time operating system)
+* ISR > task
+* ISR -> ISR -> ISR -> ... -> task -> task -> task
+* task 간의 우선순위O
+  * task가 function 형태로 구현
+* task 간 preemption 지원O
+5. Embedded Linx
+* desktop Linux를 임베디드 환경에 맞춰 최적화
+* open source, utilities, library, ... 등의 장점덕분에 개발이 쉬움
+
+
+> ### Embedded software Architecture 예시
+1. Plant control(공장 제어)
+* 
+2. Feature phone software
+* 
+
+> ### Platform
+* 최근 임베디드 시스템의 중요한 특징 중의 하나로, 플랫폼 소프트웨어가 임베디드 소프트웨어에 많이 사용이 됨
+* 플랫폼 소프트웨어: 안드로이드 OS, 타이젠 OS 등
+* 플랫폼이 임베디드 시스템에 많이 사용되는 이유
+  * 플랫폼: 커널 위에 탑재되어 프로그래머에게 프로그램 인터페이스를 제공하여 임베디드 소프트웨어를 효과적으로 프로그래밍 할 수 있도록 함
+
+
+
+## Embedded Software - RTOS
+
+> ### RTOS의 정의
+* Real-time system
+ * 정확한 결과를 산출
+ * 데드라인 내에 해당 결과를 산출해야함 (일반 프로그래밍 시스템과 다른 점)
+   * Timing constraints 가짐
+   * deadline, period, execution time 등
+ * application
+   * timing constriants를 요구하는 모든 시스템들이 real time 시스템이며, 주로 hard-time system을 real time application이라고 함
+
+
+> #### task 분류
+1. Deadline을 놓쳤을 때의 시스템의 가치에 따라
+* Hard task
+  * deadline을 놓쳤을 때 시스템의 가치는 마이너스 무한대까지 떨어질 수 있음
+  * 데드라인을 반드시 만족시켜야 하는 시스템
+  * 예) 무기, 우주선, 원자력 발전소 등
+* Soft task
+  * deadline을 놓쳤을 때 시스템의 가치가 점차적으로 떨어짐
+  * 유튜브 스트리밍 환경(끊김 현상 발생)
+* firm real-time task
+  * deadline을 놓쳤을 때 
+  * 시스템의 가치가 0이 됨
+2. 주기성에 따라
+* periodic task
+  * 주기적으로 task가 수행되는 task
+  * 임베디드 시스템에서 수행되는 대부분의 task
+  * 예) 센서로부터 읽은 데이터를 주기적으로 처리하여 output 데이터 산출, 액츄에이터 구동
+* aperiodic task
+  * task가 언제 도착할 지 모름
+  * sporadic task: aperidic task의 일종이며, interarrival time이 정해져 있음
+3. task의 중요성에 따라
+* 컴퓨터의 자원이 유한하기 때문에 분류되는 task
+* critical task
+  * 중요한 task, 데드라인 내에 실행되어야 하는 task
+* non critical task
+  * 덜 중요한 task, 데드라인을 놓쳐도 되는 task
+
+
+> ### Real-time operating systems (RTOS)
+
+
+> ### RTOS characteristics
+
+
+> ### RTOS structure
+
+
+> ### RTOS Fundamental concepts
+1. Scheduling
+2. Interrupt
+3. Synchronization
+4. Clock ticks
