@@ -55,7 +55,7 @@ category: Lecture
 
 
 _시간에 따라 데이터가 구체화되며 TCP/IP Protocol Suite에서 OSI Model로 바뀜_
-
+_하지만 현재까지 살아남은 인터넷은 TCP/IP Protocol이다_
 
 > Layers in the OSI model
 * Layer1 : Physics
@@ -75,6 +75,7 @@ _시간에 따라 데이터가 구체화되며 TCP/IP Protocol Suite에서 OSI M
   * srouce에서 destination까지의 packit 전송을 담당
 * Layer4 : Transport
   * transport layer의 communication unit: Segment, user datagram, packet
+    * 해당 layer에서 사용되는 특정 프로토콜에 따라 달라짐
   * reliable
   * process-to-process delivery (process=application)
   * error recovery
@@ -91,4 +92,27 @@ _시간에 따라 데이터가 구체화되며 TCP/IP Protocol Suite에서 OSI M
   * host(사용자)가 다양한 network resources에 접근하고 사용할 수 있게 함
 
 
-#### ADDRESSING
+> #### ADDRESSING
+* TCP/IP protocol suite에서의 주소
+1. Application layer
+  * 주소: Application-Specific address
+  * 패킷: Message
+2. Transport layer
+  * 주소: Port address
+  * 패킷: Segment
+3. Network layer
+  * 주소: Logical address
+    * IP주소
+    * 전세계에 딱 하나인 고유한 번호
+    * 변경 가능
+  * 패킷: Datagram
+4. Data link layer
+  * 주소: Physical address
+    * MAC주소
+    * 제조회사에서 만들어 부여하는 것이 디폴트
+  * 패킷: Frame
+  * Source to Destination
+5. -
+  * 주소: -
+  * 패킷: Bits
+
