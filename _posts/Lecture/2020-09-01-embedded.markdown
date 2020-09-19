@@ -386,6 +386,7 @@ ISR C : Set flag C
   * monolithic kernel과 반대 개념
 
 > Comparison with conventional OS(monolithic OS)
+<table>
 | attribute | RTOS | conventional OS |
 |:---------:|:----:|:---------------:|
 | virtual memory | none | yes |
@@ -394,6 +395,7 @@ ISR C : Set flag C
 | delivery of massive data between tasks | speed up by passing pointers, etc| use system service like pipe, mailbox|
 | resource allocation | static | dynamic(runtime) |
 | file system or disk | none or limited | yes |
+</table>
 
 
 > ### RTOS structure
