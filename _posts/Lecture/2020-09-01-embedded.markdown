@@ -91,7 +91,6 @@ while(1) {
     if (Device J needs service)
         take care of J; -> Device check routine
         process data from J; -> Data processing routine
-    
 }
 ```
 
