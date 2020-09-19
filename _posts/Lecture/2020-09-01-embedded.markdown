@@ -75,6 +75,7 @@ category: Lecture
 * 가장 간단한 임베디드 소프트웨어 아키텍쳐로, 간단한 임베디드는 이를 사용
 * device check routine과 data processing routine이 번갈아가며 수행
 * 단점: 마지막 디바이스의 device check routine이 수행되기까지 오랜 시간이 소요됨 (=device check routine의 수행이 지연될 수 있음)
+
 ```ruby
 while(1) {
     if (Device A needs service)
@@ -109,6 +110,7 @@ while(1) {
 * interrupt service의 빠른 수행 가능
   * interrupt service routine이 별도의 함수로 구현됨
   * interrupt service routine이 task routine을 포함하는 main loop보다 우선순위가 높음
+
 ```ruby
 while(1) {
     if (A flag is set)
@@ -122,7 +124,6 @@ while(1) {
 ISR A : Set flag A
 ISR B : Set flag B
 ISR C : Set flag C
-
 ```
 
 

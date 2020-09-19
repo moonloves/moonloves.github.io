@@ -11,5 +11,3 @@ This is code
 ```ruby
 print 'hello world'
 ```
-
-Today I am going to install R studio to prepare ADsP certification.
