@@ -156,7 +156,7 @@ ISR C : Set flag C
 
 ```
 
-* 해당 function을 function queue에 삽입하는 연산을 수행
+>> * 해당 function을 function queue에 삽입하는 연산을 수행
 * 동작 순서: ISR -> function queue에 삽입 -> ISR -> function queue에 삽입 -> ... -> function queue 순서대로 task 수행
 * Function queue scheduling의 문제점: No preemption
   * 새치기 금지
@@ -236,7 +236,7 @@ ISR C : Set flag C
 
 ## Embedded Software - RTOS
 
-> ### RTOS의 정의
+> ### RTOS Overview
 * Real-time system
  * 정확한 결과를 산출
  * 데드라인 내에 해당 결과를 산출해야함 (일반 프로그래밍 시스템과 다른 점)
@@ -246,7 +246,7 @@ ISR C : Set flag C
    * timing constriants를 요구하는 모든 시스템들이 real time 시스템이며, 주로 hard-time system을 real time application이라고 함
 
 
-> #### task 분류
+> task 분류
 1. Deadline을 놓쳤을 때의 시스템의 가치에 따라
 * Hard task
   * deadline을 놓쳤을 때 시스템의 가치는 마이너스 무한대까지 떨어질 수 있음
@@ -275,9 +275,125 @@ ISR C : Set flag C
 
 
 > ### Real-time operating systems (RTOS)
+* Real-time system에 사용되는 운영 체제
+* RTOS의 Real-time 이라는 단어 때문에, 모든 작업을 실시간으로 처리할 수 있는 환경을 제공하는 매우 빠른 운영체제라고 하는 오해 존재
+  * Real-time이란 주어진 시간 안에 작업이 완료되어 결과가 주어져야하는 것을 의미
+* RTOS는 주어진 작업을 정해진 시간 안에 수행할 수 있는 환경 제공
+* General purpose system vs. RTOS
+  * General purpose system:<br>
+  H/W 자원을 얼마나 공평하게 분배할 것인지에 주력
+  * RTOS: <br>
+  H/W 자원을 좀 낭비하더라도 작업의 시간 제한을 맞추는데 주력
+* 공평성의 개념보다는 우선순위가 높은 task가 많은 시간 동안 수행
+* RTOS의 요구사항
+  * 예측 가능하고 일정한 응답 시간을 지원
+  * 우선 순위 기반 스케줄링 지원
+  * Deadline 기반 스케줄링 지원
 
+> Several concepts
+(1) Foreground/Background
+* Foreground
+  * 전경 프로세스는 인터럽트 레벨이라고 부르며, interrupt service routine을 통하여 비동기적으로 발생하는 이벤트를 처리
+* Background
+  * 배경 프로세스는 태스크 레벨이라고 부르며, 응용 프로그램은 요구되는 동작을 수행하기 위해서 특정한 모듈이나 함수를 호출하는 무한루프로 구성
+  * round-robin에서는 루프 형태로 수행됨
+(2) Multitasking
+* Multitasking
+  * Embedded system에서의 task는 하나의 문제(목적)를 풀려고 하나의 큰 응용 프로그램을 논리적으로 나눈 개념
+  * 여러 task들이 병렬적으로 수행
+  * 목적을 수행하기 위해서 여러 기능들이 동시에 수행될 필요가 있고 이를 순차적으로 프로그램 하기 어렵기 때문에, 기능 블록의 모듈화 및 CPU의 효율적일 사용이라는 목적에서 Multitasking이라는 개념이 발생
+(3) Resource
+* 프로세스나 태스크가 사용하는 모든 요소
+* 하드웨어 디바이스: CPU, I/O device, Memory, Storage
+* 프로그램 상에서 쓰이는 object: 구조체, 변수, 또는 배열
+(4) Shared Resource
+* 하나 이상의 프로세스나 태스크가 공통적으로 사용할 수 있는 resource
+* 멀티 태스킹에서 resource 접근 순서를 잘 통제해야함
+* Data corruption을 막기 위해서 각 task는 미리 해당 자원에 대한 exclusive access를 얻어야함
+* RTOS에서 우선 순위 높은 task가 미리 shared resource에 대한 접근권한을 얻어야함
+(5) Scheduler
+* ready 상태에 있는 여러 개의 task 중에 다음에 어떤 task를 수행할 것인지를 결정
+* 일반적으로 가장 높은 priority의 task를 수행시키는 '우선순위기반 스케줄링' 방법을 사용
+(6) non-preemptive kernel/preemtive kernel
+* 둘 다 ISR > task
+* ISR이 끝날 때 스케줄러 루틴이 호출되어 우선순위가 가장 높은 태스크 체크
+* non-preemptive kernel
+  * 어떤 task가 수행되고 있을 때 kernel이 중간에 해당 task의 수행을 중지시키고 다른 task를 수행시킬 수 있는 능력이 없음(새치기 불가능)
+  * 다른 말로 cooperative multitasking이라고도 함(협업필요)
+  * 비동기적 이벤트(interrupt)는 ISR이 처리하며, ISR은 항상 인터럽트가 발생한 태스크로 되돌아옴
+  * 장점
+    * 인터럽트 지연시간이 짧음
+    * 세마포어를 사용해서 공유데이터를 보호할 필요가 줄어듦
+  * 단점
+    * 현재 실행 중인 task가 CPU를 자발적으로 양도해야 하기 때문에 상위 우선순위의 태스크가 실행 준비 상태가 되더라도 실제로 실행될 때를 기다려야함->응답성이 낮음
+    * 데드라인 놓칠 수 있음
+  * RTOS에서 사용 X
+* preemptive kernel
+  * CPU의 제어권은 실행준비가 된 최상위 우선순위 task로 항상 넘어감
+  * ISR이 최상위 우선순위 task를 실행준비 상태로 만들면, ISR이 종료될 때 
+  인터럽트가 발생했던 task는 중단되고 새로운 상위 우선순위 task가 수행
+  * RTOS에서 사용 O
+(7) cyclic executive
+* multitasking real-time system 운영체제의 가장 간단한 형태
+  * 루프 형태로 되어 있어 특정 task의 일부를 수행하도록 하드 코딩됨
+  * 스케줄링 데드라인을 만족시키기 위해 어떤 태스크의 어떤 파트를 수행할지에 대한 스케줄링 루프를 미리 결정하는 것
+  * 여름방학 시간표; 어떤 시간에 무엇을 할지
+    * 이미 데드라인을 고려하여 스케줄링 아웃라인을 설정하고 해당 루틴대로 반복적으로 수행
+* 장점
+  * 구현이 대단히 간단
+  * 오버헤드가 적음
+  * 모든 운영체제의 동작을 예측하기 쉬움
+* 단점
+  * 미리 정해진 작업들 외의 다른 작업을 추가하기 어려움
+  * 작업 수행 중 선점이 불가능
+  * 모든 스케줄링 수작업으로 이루어짐
 
 > ### RTOS characteristics
+* multitasking
+  * OS가 사용된다 = OS 위에서 여러 개의 task가 병렬적으로 수행된다
+  * RTOS도 여러 개의 태스크를 병렬적으로 수행되기 때문에 multitasking이 지원되어야 함
+* fast context switching
+  * 여러 태스크가 번갈아가며 수행되기 때문에 context switching이 일어남
+    * context switching: 태스크 간의 전환
+  * 태스크의 데드라인을 만족시키기 위해 context switching이 빠르게 진행되어야 함
+* small size
+  * 임베디드 시스템은 제한된 storage 공간만을 가지고 있으므로 OS도 작은 커널 사이즈를 유지해야 함
+* fast processing of exeternal interrupts
+  * interrupt 발생 시 빠르게 처리되어야 함
+  * interrupt 발생 시 interrupt handler 수행
+* task scheduling can be enabled by external interupt
+  * RTOS에서 인터럽트 처리가 끝날 때마다 스케줄링 결정이 내려짐
+  * 가장 많이 발생하는 인터럽트: timer interrupt
+* simple command interpreter 권장
+  * 커멘드를 받고 해석해서 수행하는 프로그램을 의미
+* intertask communication and synchronization
+  * 프로세스 간의 커뮤니케이션이 많이 발생
+  * RTOS는 커널은 간결하게 작성하고, 많은 기능들을 task 레벨로 올려서 task 수가 많고 task 간의 동기화를 통해 여러 task 간에 동작하는 구조이기 때문
+* no memory protection: the kernel and user execute in the same space
+  * Windows와 Linux와 같은 monolithic 커널에서 프로그래밍을 하면 array나 pointer를 잘못 썼을 경우 오류메세지 확인 가능
+  * RTOS는 커널과 유저프로그래밍이 동일한 공간에서 동작을 하기 때문에 메모리 보호가 잘 지원이 되지 않음
+  * 프로그래밍 시 주의 필요
+* application programs use system calls
+  * 태스크 프로그램에서 시스템 콜을 호출하여 RTOS에서 제공하는 기능 사용
+* limited memory usage
+  * 임베디드 시스템이 목적이기 때문
+  * 메모리 영역을 한정적으로 할다 
+* Microkernel
+  * 커널을 micro화
+  * 핵심적인 기능만 커널에 넣고, 많은 기능을 task level로 옮김
+    * 핵심적인 기능: task 관리, 스케줄링 기능
+  * 태스크 간의 커뮤니케이션이 매우 중요
+  * monolithic kernel과 반대 개념
+
+> Comparison with conventional OS(monolithic OS)
+| attribute | RTOS | conventional OS |
+|:---------:|:----:|:---------------:|
+| virtual memory | none | yes |
+| application prog. | single purpose | general purpose |
+| I/O processing | based on priority | fairness |
+| delivery of massive data between tasks | speed up by passing pointers, etc| use system service like pipe, mailbox|
+| resource allocation | static | dynamic(runtime) |
+| file system or disk | none or limited | yes |
 
 
 > ### RTOS structure
