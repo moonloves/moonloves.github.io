@@ -119,7 +119,6 @@ while(1) {
     if (C flag is set)
         C task code
 }
-
 ISR A : Set flag A
 ISR B : Set flag B
 ISR C : Set flag C
@@ -144,6 +143,7 @@ ISR C : Set flag C
 * Round-robin with interrupt와 다른 점: task 간에도 우선순위가 있음
   * task를 function으로 구현
 * 동작 방식
+
 ```ruby
 while(1) {
     Examine the function queue (function queue를 살펴보고 수행)
@@ -155,6 +155,7 @@ ISR B : Set flag B
 ISR C : Set flag C
 
 ```
+
 * 해당 function을 function queue에 삽입하는 연산을 수행
 * 동작 순서: ISR -> function queue에 삽입 -> ISR -> function queue에 삽입 -> ... -> function queue 순서대로 task 수행
 * Function queue scheduling의 문제점: No preemption
