@@ -386,23 +386,166 @@ ISR C : Set flag C
   * monolithic kernel과 반대 개념
 
 > Comparison with conventional OS(monolithic OS)
-<table>
 | attribute | RTOS | conventional OS |
 |:---------:|:----:|:---------------:|
 | virtual memory | none | yes |
 | application prog. | single purpose | general purpose |
-| I/O processing | based on priority | fairness |
+| I/O processing | based on priority | fairness(CFS) |
 | delivery of massive data between tasks | speed up by passing pointers, etc| use system service like pipe, mailbox|
 | resource allocation | static | dynamic(runtime) |
 | file system or disk | none or limited | yes |
-</table>
+
+> ### RTOS functions (라고 쓰고 RTOS의 핵심적인 기능(커널에서) 이라고 읽는다)
+1. task management
+  * task 생성, 삭제, 지연, 재시행
+  * 스케줄링 정보 관리(우선순위, 스케줄링 정책 등)
+2. intertask communication, synchronization
+  * semaphore
+  * mailbox, queue
+  * event flag
+3. 기본적인 메모리 관리
+  * 동적 메모리 할당, 해지
+  * 특정 메모리 잠금 기능
+  
+
+> #### RTOS Structure
 
 
-> ### RTOS structure
-
+> #### Multitasking Techniques
+* big loop
+  * application(task)들이 일반적으로 루프 안에서 실행
+* coroutine multitasking
+  * application(task)를 수행하기 위해 공통으로 사용되는 루틴
+  * 여러 개의 coroutine들이 응용 프로그램들을 작성할 때 사용될 수 있음
+* interrupt-driven scheduling
+  * task가 인터럽트에 의해 활성됨
+  * interrupt handler가 끝날 때마다 스케줄링 결정 내려짐
+* multitasking executive
+  * 가장 간단한 RTOS
 
 > ### RTOS Fundamental concepts
 1. Scheduling
+  * 현재 ready인 task 중 하나를 선택
+  * 스케줄링 알고리즘
+    * nonreal-time : <br>
+    FCFS, round-robin, priority-based, shortest job first 등
+    * real-time : <br>
+    rate monotonic, earliest deatline first 등
+      * 둘 다 기본적으로 priority 기반 스케줄링 기법, 다만 priority를 정하는 방식에 따라 나누어짐
+    * rate monotonic 알고리즘:
+      * 주기가 짧은 task에 우선순위 부여
+      * 우선순위가 바뀌지 않는다면 최적의 스케줄링 기법
+      * RTOS에서 optimal: 가능한 한 많은 task들이 데드라인을 만족할 수 있음
+    * earliest deadline first 알고리즘:
+      * 매 순간 데드라인에 가장 근접한 task에 우선순위 부여
+      * task의 이용률을 최대화함
+  * priority assignment
+    * priority 할당 기준이 중요
+      * importnace, criticality(task의 중요도), period, deadline
+      * execution time, arrival time, elapsed time after ready
+    * method
+      * static (예. rate monotonic)
+      * dynamic (예. earlies deadline first; 매 순간마다 검사하므로)
+
 2. Interrupt
 3. Synchronization
 4. Clock ticks
+
+
+#### Synchronization 1
+> Outline
+* Event control block
+* Mailbox
+* Message queue
+* Semaphore
+* MUTEX semaphore
+* Event flag
+  * Event flag를 제외하고 네 가지 동기화 기능 모두 ECB(Event Control Block)사용
+
+> Event Control Block
+* OS XXX Create
+* OS XXX Del
+* OS XXX Pend : Wait for XXX
+* OS XXX Post : Release for XXX (메세지 넣음)
+* OS XXX Accept : A non-blocking version of OS XXX Pend
+* OS XXX Query
+* XXX : 사용하고자 하는 동기화 함수의 이름 넣어주면 됨 (예. MBox)
+* event flag를 제외하고 모두 event control block에 의해 커널에서 관리됨.
+  * 예) semaphore을 생성하면 커널에서 자동으로 semaphore와 관련된 ECB가 생성됨 
+
+> ECB 구조체의 구성
+* OS_EVENT_TYPE
+* OSEVENTCnt
+* OSEVENTPtr
+* OSEVENTGrp
+* 0~63 (bitmap 구조)
+(1) OS_EVENT_TYPE<br>
+* ECP의 용도를 나타내는 필드
+* OS_EVENT_TYPE_SEM, OS_EVENT_TYPE_MUTEX, OS_EVENT_TYPE_MBOX, OS_EVENT_TYPE_Q<br>
+(2) OSEVENTCnt<br>
+  * 세마포어 : 세마포어 카운터 저장
+  * 상호배제 세마포어 : PIP 저장 (priority inversion problem)<br>
+(3) OSEventPtr<br>
+  * 메일박스나 메세지 큐일때만 사용
+  * 해당 구조체를 가리키는 포인터<br>
+(4) OSEvnetGrp, OSEventTbl[]<br>
+  * OSRdyTbl[], OSRdyGrp와 비슷한 형태
+  * 이벤트의 발생을 기다리는 태스크들의 리스트
+  * 현재 수행중인 태스크는 OSRdyTbl과 OSRdyGrp가 관리
+  * 특정 이벤트를 기다리는 태스크는 OSEventTbl이 OSEventGrp관리<br>
+  * insert a task to event wait list
+  * remove a task from event wait list
+  * finding the highest priority task from event wait list
+(5) Free event control block list
+  * 할당되는 ECB의 개수는 응용 프로그램에서 요구하는 세마포어, 메일박스, 메시지 큐에 따라 다름
+    * ECB의 최대 개수는 OS_CFG.H의 OS_MAX_EVENTS 에서 정의됨
+    * OS_INIT이 호출되면 모든 ECB는 Free event control block list에 연결
+    * 세마포어나 메일박스 큐가 생성되면 free event control block list에서 삭제되고 초기화됨
+
+> MailBox
+(1) mailbox 생성<br>
+* OS_EVENT *OSMBoxCreate(void *msg)
+  * 전달하고자하는 메세지가 저장됨
+  * msg : 메세지에 대한 포인터
+  * 리턴: 리턴 형식이 OS_EVENT* 즉 ECB
+  * prevent->OSEventPtr = msg 가리킴<br>
+(2) mailbox 삭제<br>
+* OS_EVENT *OSMboxDel(OS_EVENT *prevent, INT8U opt, INT8U *err)
+  * OS_EVENT *prevent: OS_Event *OSMBoxCreate의 리턴값(메세지의 위치)
+  * INT8U opt: 메일박스 삭제할 때의 옵션
+    * OS_DEL_NO_PEND: 기다리고 있는 프로세스가 있을 때에 삭제 x
+    * OS_DEL_ALWAYS: 기다리고 있는 프로세스가 있든 없든 삭제 O
+  * INT8U *err : 제대로 삭제 되었는지에 대한 여부
+    * OS_NO_ERR 가 리턴되면 제대로 삭제된 것<br>
+(3) mailbox에서 메세지 기다리기<br>
+* void *OSMBoxPend(OS_EVENT *prevent, INT16U timeout, INT8U *err)
+  * OS_EVENT *prevent: OS_Event *OSMBoxCreate의 리턴값(메세지의 위치)
+    * OSEventPtr이 NULL이 아닌 포인터 값을 가지고 있을 때 OSMboxPend()가 호출되면, OSEventPtr 값을 msg에 저장하고, 메일박스는 비운다
+    * OSEventPtr이 NULL 포인터 값일 때; WAITING
+      * 가져 올 메세지가 없으므로 time out을 반영하여 waiting
+    * 메시지가 메일 박스에 들어왔을 때, 그리고 OSMboxPend()를 호출한 이 태스크가 다시 HTP(Highest Priority Task)가 되었을 때
+      * message는 호출한 태스크에 넘겨짐
+  * INT16U timeout: 메세지를 기다리는 시간
+    * 0이면 무한대로 기다림<br>
+(4) mailbox에 메시지 보내기<br>
+* INT8U OSMboxPost(OS_EVENT* prevent, void* msg)
+  * 메세지를 메일박스에 저장<br>
+(5) 기다리지 않고 mailbox에서 메시지 읽기
+* void* OSMboxAccept(OS_EVENT* prevent)
+(6) mailbox에 대한 정보 읽기
+* INT8U OSMboxQuery(OS_EVENT* prevent, OS_MBOX_DATA* pdata)
+(7) OSMboxPostOpt(OS_EVENT* prevent, void* msg, INT8U opt)<br>
+  * mailbox에 대기 중인 모든 task에게 메세지를 broadcast할 수 있는 기능 추가<br>
+(8) OSMboxAccept(OS_EVENT* prevent)
+  * 호출 task를 대기 상태로 만들지 않고 메세지를 받을 수 있음
+  * 전달 인자
+    * prevent: 해당 mailbox의 ECB에 대한 포인터
+  * OSMboxPend 함수의 non-blocking version
+
+> 프로그램 예시를 통해 알아보기
+OSMboxCreate 함수의 리턴값은 ECB의 주소를 의미하며, 이 값이 MBoxPend와 MBoxPost의 첫번째 인자로 들어간다. 그리고 OSMboxCreate의 파라미터를 통해 처음 메시지 위치를 null로 초기화해준다.<br>
+OSMBoxPend는 ECB의 주소를 전달받고, 두번째 인자는 timeout을 받는다. 그리고 메세지가 도착하면 받을 위치를 설정해야하는데, 이를 리턴 값으로 설정한다. 이는 해당 메세지가 저장될 위치이다.<br>
+OSMboxPost 함수는 첫번째 인자로 ECB주소를 전달받고 두번째 인자로 넘겨질 데이터가 저장될 주소가 넘겨진다. 넘겨질 데이터는 txmsg에 저장해주고 OSMboxPost 함수를 호출하면 mailbox에 txmsg가 저장이 되며, 이는 rxmsg에 의해 전달이 가능하다.
+
+> Message queue
+* 메일 박스와 차이점: 여러 개의 메시지를 전달하고자 할 때 사용

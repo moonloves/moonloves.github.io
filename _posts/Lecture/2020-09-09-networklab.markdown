@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Computer Network
+title: Computer Network Lab
 date: 2020-09-01 16:30:00 +0900
 category: Lecture
 ---

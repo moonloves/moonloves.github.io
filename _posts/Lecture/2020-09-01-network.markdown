@@ -44,12 +44,32 @@ category: Lecture
 > TCP/IP protocol Suite(Internet Protocol)
 * Layer1 : Physics
   * 실제로 wire 사에서 이루어지는 bit 단위의 전송을 담당
+  * physical layer의 communication unit: bit
+  * 프레임 내부의 각 비트를 한 노드에서 다음 노드로 이동
+  * 물리 계층에서의 프로토콜들은 링크에 의존하고, 링크의 실제 전송 매체에 의존
+  * 네트워크에 쓰이는 물리적, 전기적 요소들을 관리
 * Layer2 : Data link
   * 서로 이웃한 network 구성 요소 간의 data 전송을 담당
+  * data link layer의 communication unit: frame
+  * hop-to-hop delivery
+  * 비트 단위의 정보를 frame 단위로 정리하고, hop-to-hop delivery를 담당
 * Layer3 : Network
-  * srouce에서 destination까지의 datagram 전송을 담당
+  * source에서 destination까지의 datagram 전송을 담당
+  * network layer의 communication unit: Datagram
+  * source to destination
+  * 각 IP주소가 packit 헤더에 들어감
+  * IP protocol
+  * source에서 destination까지의 packit 전송을 담당
 * Layer4 : Transport
   * process 간의 data 전송을 담당
+  * transport layer의 communication unit: Segment, user datagram, packet
+    * 해당 layer에서 사용되는 특정 프로토콜에 따라 달라짐
+  * reliable
+  * process-to-process delivery (process=application)
+  * error recovery
+  * error recovery를 포함하여 process 간의 reliable delivery를 제공
+  * port 번호를 packet의 헤더에 적어줌
+  * TCP protocol
 * Layer5 : Application
   * 다양한 network application을 지원
 
@@ -72,7 +92,7 @@ _하지만 현재까지 살아남은 인터넷은 TCP/IP Protocol이다_
   * source to destination
   * 각 IP주소가 packit 헤더에 들어감
   * IP protocol
-  * srouce에서 destination까지의 packit 전송을 담당
+  * source에서 destination까지의 packit 전송을 담당
 * Layer4 : Transport
   * transport layer의 communication unit: Segment, user datagram, packet
     * 해당 layer에서 사용되는 특정 프로토콜에 따라 달라짐
@@ -116,3 +136,59 @@ _하지만 현재까지 살아남은 인터넷은 TCP/IP Protocol이다_
   * 주소: -
   * 패킷: Bits
 
+> 데이터 전송 방식
+* packet switching network : <br>
+  * 목적지 주소 전달 방식(현재 사용하는 인터넷 방식)
+  * 경로 알지 X, 목적지만 앎
+* circuit switching network : <br>
+  * 중앙 제어 전달 방식
+  * 출발 전 경로를 미리 알아야 함, 중앙이 파괴되면 네트워크 사용 불가능하여 전쟁 때 취약
+
+> Transmission Control Protocol(TCP) / Chapter15
+* TCP/IP protocol suite
+  * 프로토콜: 컴퓨터와 컴퓨터가 네트워크를 이용하여 통신하기 위해 정해놓은 '약속'
+  * application: SMTP, FTP, TFTP, DNX, SNMP, ...DHCP
+  * transport layer에 있는 protocol 종류: UDP, TCP, SCTP
+  * Network layer: IGMP, ICMP, IP, ARP
+  * Data link layer, Physical layer: Underlying LAN or WAN technology
+* application layer 제외하고 모두 커널에 이미 구현되어 있음
+
+> Stream delivery
+* boundary delivery 의 반대 개념
+* Stream delivery: TCP에서 사용되는 경계가 없는 전달 방식
+  * application에서는 본인의 boundary를 만들지마 배송 boudary는 설정하지 않음
+  * byte 단위로 stream(전달)
+  * receiving process에서 필요에 따라 packaging 하여 전송
+
+> Sending and receiving buffers
+* TCP에서의 버퍼 영역
+  * 보내는 쪽과 받는 쪽 모두 있음
+  * transport layer
+  * application에서 TCP에 데이터를 보내주면 buffer의 빈 공간부터 byte 단위로 채워짐
+  * segment로 만들어서 전송됨
+* TCP vs UDP
+  * TCP: 신뢰성 보장O (비서가 없어진 패킷 체크)
+  * UDP: 신뢰성 보장X
+
+> TCP의 신뢰성 보장
+* 패킷마다 번호를 붙여 수신 번호와 비교하여 패킷의 손실을 확인함
+* 전송되는 데이터는 TCP에 의해 번호가 부여됨
+* 패킷마다 부여되는 번호: Sequence 번호, 랜덤으로 부여, 패킷 사이즈만큼 증가
+* TCP의 Sequence번호는 segment 안에 있는 첫번째 데이터 byte 번호로 할당됨
+  * 이는 랜덤으로 할당된 것
+* ack번호: 응답 번호
+  * cumulative ACK (누적 방식)
+
+> 데이터를 보내고 응답을 받는 방식
+1. Selective ACK
+* 직관적으로 이해하기 쉬운 방식
+* ack번호가 "받은" segment의 시작 번호
+2. Cumulative ACK
+* ack번호가 "받을" segment의 시작 번호
+* 시작 번호는 header에 적혀있고, size는 시스템에서 알려주기때문에 다음 번에 받아야 할 ACK 번호를 알 수 있음 (이와 실제 ACK 번호를 비교)
+
+> TCP segment format
+* Segment = Header(20~60byte) + Data
+* Segment의 header
+  * Source port address(보낸 쪽 포트 번호)
+  * Destination port address(받는 쪽(상대방)포트 번호)
