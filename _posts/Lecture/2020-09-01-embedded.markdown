@@ -452,6 +452,36 @@ ISR C : Set flag C
 4. Clock ticks
 
 
+> MicroC/OS II RTOS에서 highest priority를 찾는 방법
+* Ready list를 관리
+
+
+
+#### uC/OS2 kernel internals
+> uC/OC2 커널 개요
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### Synchronization 1
 > Outline
 * Event control block
@@ -549,3 +579,194 @@ OSMboxPost 함수는 첫번째 인자로 ECB주소를 전달받고 두번째 인
 
 > Message queue
 * 메일 박스와 차이점: 여러 개의 메시지를 전달하고자 할 때 사용
+
+
+
+#### SYNCHRONIZATION 2 (6주차 첫번째 수업) :)
+<br>
+지금까지 한 것: Task syncronizatino 중 ECB, MailBox, Message Queue<br>
+<strong>오늘 할 것: Semaphore, Event Flag</strong><br>
+다음에 할 것: Mutex<br>
+
+> Semaphore functions
+1. OSSemCreate()
+  * 세마포어 생성
+  * 인자: 세마포어의 초기값
+2. OSSemPost()
+  * 세마포어에 이벤트 발생을 알림(signal)
+  * 세마포어를 기다리는 태스크 중 가장 우선 순위가 높은 태스크가 실행(sem++)
+3. OSSemPend()
+  * 세마포어의 이벤트 발생을 기다림(wait)
+  * 세마포어 값을 1감소(sem--)
+    * sem > 0 : success
+    * sem = 0 : 다른 태스크가 깨워줄 때까지 대기 상태
+  * time out 값을 지정해 둦다면, time out 시간까지만 대기 상태
+  * time out 시간이 지나면 에러 값을 가지고 리턴
+4. OSSemAccept()
+  * OSSemPend()와 비슷하나, sem=0이라도(세마포어가 사용가능하지 않더라도) 대기하지 않음
+5. OSSemQuery()
+  * 현재 세마포어의 상태를 알 수 있음
+
+
+> 세마 포어의 사용 목적
+1. 공유 변수 접근
+<pre> <code>
+OS_Event* sem; //  ECB 선언
+sem = OSSemCreate(1); // 세마포어 생성, 세마포어의 초기값은 1
+
+OSSemPend(sem, 0, &err); // sem = 0 이 되어 공유 변수 접근 가능해짐
+<hr>
+공유 변수
+<hr>
+OSSemPost(sem); // 공유 변수에서 빠져나감
+</code></pre>
+* 만일 다른 task가 OSSemPend를 호출하더라도 sem = 0이기 때문에 blocking됨
+* 그래서 OSSemPend와 OSSemPost는 쌍으로 호출되어야 함
+* race condition 발생을 막아줌
+* 이로써 semaphore를 사용하여 critical section을 보장
+2. 기타 task 간의 동기화
+* 다른 태스크로부터 signal을 받을 때까지 기다리는 프로그래밍을 할 때 사용
+<pre> <code>
+OS_Event* sem;
+sem = OSSemCreate(0);
+
+OSSemPend(sem, 0, &err) or OSSemAccept(...)
+</code></pre>
+이면 다른 task에서 OSSemPost(sem)을 호출해 줄 때까지, 즉 다른 태스크로부터 signal을 받을 때까지 wait<br>
+다른 태스크에서 signal을 주면 wake up
+
+> Semaphore의 kernel internals
+1. OSSemCreate
+<pre><code>
+OS_EVENT* OSSemCreate(INT16U cnt) { // cnt: 세마포어 초기값
+  1. ECB 선언
+  OS_ENTER_CRITICAl();
+  2. Free ECB 리스트로부터 ECB를 하나 얻음
+    2-1. OSEventFreEList의 ECB 포인터는 다음 ECB를 가리키도록 조정
+  OS_EXIT_CRITICAL();
+  3. ECB 타입을 세마포어로 지정
+    3-1. 세마포어의 초기값을 지정
+    3-2. wait list를 초기화(커널 내의 함수 OSEventWaitListInit(prevent) 사용)
+}
+</code></pre>
+2. OSSemPend
+<pre><code>
+void OSSemPend(OS_EVENT* prevent, ITN16U timeout, INT8U *err) {
+  1. prevent가 가리키는 ECB가 세마포어인지 검사
+  2. 세마포어가 사용 가능한 경우(cnt > 0)이면 cnt-- 하고 리턴
+  3. 세마포어가 사용 가능하지 않은 경우(cnt = 0)이면
+    3-1. sleep하도록 하기 위해 태스크의 TCB상태를 OS_STAT_SEM으로 만듦
+    3-2. timeout값 지정
+    3-3. 태스크를 sleep 상태로 만듦(커널 내의 함수 OS_EventTaskWait() 사용)
+  // 여기서부터 태스크가 sleep 상태가 됨
+  4. OS_Sched()를 호출(task level의 스케줄링 함수)하여 우선 순위 높은 태스크를 실행
+    4-1. 또는  다시 이 태스크가 실행될 때 timeout이 발생한 것이라면, OSEventTO()함수가 호출되고, ECB에의 링크가 끊어짐
+}
+</code></pre>
+3. OSSemPost
+태스크에서 보내는 시그널!
+<pre><code>
+void osSemPost(OS_EVENT* prevent) {
+  1. prevent가 가리키는 EcB가 세마포어인지 검사
+  2. 세마포어를 기다리는 태스크가 있다면
+    2-1. 그 중 우선순위가 가장 높은 태스크를 ECB 대기리스트에서 제거하고는 실행상태를 만듦(커널 내의 OS_EventTaskRdy() 함수를 사용)
+    2-2. OS_Sched() 호출(Rdy가 달라졌기 때문에 재스케줄링하여 우선순위 높은 태스크 찾음)
+  3. 세마포어를 기다리는 태스크가 업삳면 세마포어 cnt++
+}
+</code></pre>
+4. OSSemAccept
+* NO wait
+  * OSSemPend 함수에서는 cnt = 0이면 blocking되어 wait한다는 것이 차이점
+<pre><code>
+INT16U OSSemAccept(OS_EVENT* prevent) {
+  1. 세마포어 cnt > 0 일 때만 cnt--되고 리터 
+  2. OSSemAccpetI()를 호출한 부분에서는 리턴 값을 확인하여 0이 아닌 경우와 0인 경우를 구분해서 수행
+}
+</code></pre>
+5. OSSemDel(): 세마포어 삭제 함수
+6. OSSemQuery(): 세마포어 상태 얻는 함수
+
+
+> ECB kernel functions
+1. OS_EventWaitListInit(OS_EVENT* prevent)
+  * ECB 초기화
+  * OSSemCreate 내에서 호출됨
+  * 세마포어, 메일박스, 메시지 큐 생성 시에 호출되는 함수
+  * 단지 ECB를 기다리는 태스크의 리스트가 아직은 없다는 것을 표시
+2. OS_EventTaskRdy()
+  * 태스크를 준비 상태로 만듦
+  * OSSemPost 내에서 호출
+  * ECB가 시그널을 받아서, ECB를 기다리던 태스크 중 가장 우선순위가 높은 태스크를 실행 가능 상태로 바꿀 때
+3. OS_EventWait()
+  * 태스크를 어떤 이벤트에 대해 wait 상태로 만들기
+  * OSSemPend 내에서 호출, sem=0이면(세마포어가 사용 가능한 상태가 아니면) wait으로 만들어주는 함수
+  * 태스크를 준비 리스트에서 삭제
+  * ECB의 대기 리스트에 태스크 삽입
+4. OS_EventTo()
+  * 이벤트를 기다리다가 timeout이 발생하여, 태스크를 준비 상태(ready)로 만듦
+  * OSSemPend 내에서 호출
+  * 타임 아웃으로 태스크 준비(ready) 상태 만들기
+  * OSSemPend(), OSMboxPend(), OSQPend() 에서 호출
+
+
+>#### Event Flag
+* <strong>여러 이벤트</strong>에 대한 <strong>효과적인</strong> 동기화가 가능함 (이제까지는 효과적인 지원X)
+* 일종의 <strong>자료구조</strong>로써, 각 비트는 특정한 사건(event)에 대응됨
+  * Evnet flag 자체가 자료구조이므로 ECB를 사용하지 않음
+* 이벤트가 발생하면 특정 비트를 1또는 0으로 설정
+* 연산
+  * OSFlagCreate()
+  * OSFlagDel()
+  * OSFlagPend()
+  * OSFlagPost()
+  * OSFlagAccept()
+  * OSFlagAccept()
+  * OSFlagQuery()
+* 사용 목적
+  * 태스크 동기화에 유용(특히 여러 task 간에)
+    * 우선 순위 높은 태스크를 우선 순위 낮은 2개의 태스크가 특정 시점까지 블록킹 하는 경우
+* MicroC OS2에서 제공하는 자료구조
+  1. Event Flags Group Structure
+  <pre><code>
+  typedef struct { 
+  INT8U OSFlagType;       // 이벤트 플래그 타입
+  void* OSFlagWaitList;   // 기다리고 있는 task의 노드 위치 모두
+  OS_FLAGS OSFALGFLAGS;   // event flag group이 가진 비트맵
+  } OS_FLAG_GRP;
+  </code></pre>
+  2. Event Flags Node Structure
+  <pre><code>
+  typedef struct {
+    void* OSFlagNodeNext;
+    void* OSFlagNodePrev;      // 리스트 형태로 관리되는 노드들
+    void* OSFlagNodeTCB;       // 각 TCB의 위치를 가리킴
+    
+    void* OSFlagNodeFlagGrp;   // Event Flag Group 위치 가리킴
+    
+    OS_FLAGS OSFlagNodeFlags;  // 각 event flag node가 가진 비트맵
+    
+    INT8U OSFlagNodeWaitType;  // ANY, ALL 등의 옵션
+  } OS_FLAG_NODE;
+  </code></pre>
+* 프로그래밍 step
+  1. Declaraion
+  <pre><code>
+  OS_FLAG_GRP* e_grp; // OS Flag Group 선언
+  INT8U err;
+  </code></pre>
+  2. Creation
+  <pre><code>
+  e_grp = OSFalgCreate(0x00, &err); // OS Falg Group 생성, 비트맵 초기화
+  </code></pre>
+  3. Pend
+  <pre><code>
+  OSFlagPend(e_grp, 0x01, OS_FLAG_WAIT_SET_ALL + OS_FLAG_CONSUME, 0, &err);
+  // 해당 필드 0x01을 옵션에 있는 값(set이니까 1)으로 세팅해줌
+  </code></pre>
+  4. Post
+  <pre><code>
+  OSFlagPost(e_grp, 0x01, OS_FLAG_SET, &err);
+  // Event Flag Group의 비트맵을 세팅
+  // 그리고나서 세팅된 비트맵이 Event Flag Node들이 요구하는 비트맵과 일치하는지 확인, 일치한다면 해당 event flag node에 있는 option 수행
+  </code></pre>
+
