@@ -770,3 +770,28 @@ INT16U OSSemAccept(OS_EVENT* prevent) {
   // 그리고나서 세팅된 비트맵이 Event Flag Node들이 요구하는 비트맵과 일치하는지 확인, 일치한다면 해당 event flag node에 있는 option 수행
   </code></pre>
 
+
+### Real-Time Scheduling(7주차); real-time scheduling이 이루어지는 방법
+
+> Motivating Example
+* 모든 태스크들이 dead line을 만족할 수 있는지 확인해야함(이를 feasibility analysis라고 함)
+* 스케줄러가 우선순위를 할당하는 방법
+  * Static priority: 각 태스크의 우선순위가 고정(오버헤드 적음)
+  * Dynamic priority: 각 태스크의 우선순위가 바뀔 수 있음(오버헤드 많음)
+
+
+
+> Scheduler
+* Rate-Monotomic Scheduling(RMS)
+  * 주기가 짧은 task에게 우선순위를 높게
+* Earliest Deadline First Scheduling(EDF)
+  * 매순간 미래의 dead line을 살펴 dead line이 가장 근접한 task에게 우선순위 높게
+
+> Rate-Monotonic Scheduling(RMS)
+* static priority
+* 수행시간과 상관 없이, 오직 주기에 의하여 우선순위가 결정됨
+* 태스크의 주기가 짧을수록 더 높은 우선순위 가짐
+* time diagram을 주기들의 최소공배수까지 그리기가 어렵기 때문에, 수식 발견
+* Feasibility analysis
+<img src="{{ site.baseurl }}/images/basic/feasibility.png" width="30%" height="30%">
+

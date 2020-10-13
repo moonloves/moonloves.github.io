@@ -84,3 +84,213 @@ void S() {
 }
 </code>
 </pre>
+
+
+
+
+
+> 6주차 첫번째 수업
+학습목표
+1) 타입의 개념
+   - 데이터 집합 
+      ex) 정수형 집합 { ... -3, -2, -1, 0, 1, 2, 3 ... }
+   - 연산 집합
+      ex) 연산자 집합 { =, +, -, * , /, % ... }
+   - 타입 안정성(type safety) : 강타입(strongly typed), 약타입(weakly typed), 무타입 (상대적인 분류이며 정확한 분류 기준은 없다)
+     - 타입 에러를 일으키지 않을 것이 보장이 된다
+2) 타입의 분류기준
+   - 원시타입 (primitive type)
+   - 사용자정의타입 (user-defined type)
+   - 단순타입
+   - 복합타입(구조체)
+3) 단순타입
+   - 정수형
+   - 실수형 (IEEE 754) : 부호/지수부/가수부
+     float (32bit) 단정밀도 single
+     1bit / 8bit / 23bit
+     double (64bit) 배정밀도 double
+     1bit / 11bit / 52bit
+     (예) 십진수를 16진수로 바꾸기
+      11.125(10) -> hexadecimal
+      1) 부호비트
+      0 
+      2) 소수점 앞자리와 뒷자리를 2진수화 시킨다.
+      1011.001
+      10110.01 * 2e-1
+      101.1001 * 2e+1
+      3) 정규화 (소수점을 이동시켜 왼쪽에 1만 남게 만든다)
+      1.011001 * 2e+3
+      4) 가수부 부분에 정규화된 소수점 오른쪽 부분을 먼저 넣고 남는 부분은 0으로 채워넣는다.
+      0 / 지수 / 011001 00000000000000000
+      single일 경우 bias +127
+      (double일 경우 bias +1023)
+      0000 0000  -127  (특수용도)
+      0000 0001  -126  (e min)
+      ...
+      0111 1111      0
+      1000 0000      1
+      1000 0001      2
+      1000 0010      3 (130)
+      ...
+      1111 1110  +127  (e max)
+      1111 1111  +128  (특수용도)
+  
+      0 / 1000 0010 / 011001 00000000000000000
+      0100 0001 0011 0010 0000 0000 0000 0000
+      0x41320000
+
+	121.0(10) vs 0.0062(10)
+	0111 1001.0 (2)             ->    1.111001 * 2e+6
+	0.000000011001011... (2)   ->    1.1001011... * 2e-8
+
+	6+127 = 133(10)  = 1000 0101(2)
+	-8+127 = 119(10) = 0111 0111(2)
+        참고:http://binaryconvert.com/
+
+> 6주차 두번째 수업
+3) 단순타입
+   - 정수형
+   - 실수형
+   - 문자형 (두 가지 방식: ASCII, Unicode)
+      C/C++ 
+	1byte char
+	2byte wchar_t
+      JAVA 
+	2byte char
+      Go
+	1~4byte rune literal(가변적인 길이 가짐)
+   - 논리형
+	true, false
+   - 열거형
+4) 복합타입
+   - 배열(array)
+     - 같은 타입의 데이터의 모임
+     - primitive 타입의 배열은 초기 값을 가진다.(integer일 때 0, 실수형일때 0.0)
+     - refernece(참조형) 타입의 경우 배열 선언 시 초기값은 Null값을 가진다
+   - 문자열형(String)
+     - sequence of byte(연속적으로 나열되어 있는 바이트)
+     - immuatable(한번 만들어지면 수정 불가능)
+     <pre><code>
+     for idx, r := range "123" {
+             fmt.Println(idx, r)
+     }
+     </code></pre>
+     출력 : 0 49 / 1 50 / 2 51
+   - 연관배열(Associated Array Type) dictionary(파이썬), map(c++) 구조
+     - 연관배열(key, value), 해싱 (hash table)
+       O(1),  Worst case O(n) 시간복잡도 list와 유사
+       직접적인 산술 연산에 적용해서 아이템이 저장되어 있는
+       테이블의 주소를 계산하여 아이템에 접근.
+   - 구조체, 공용체
+   - 포인터형, 참조형 (cpp 에서 int &rid = id)
+
+
+
+
+
+
+package main
+
+import(
+	"fmt"
+)
+
+var subjects map[string]string
+subjects = make(map[string]string)
+subjects["p1"] = "김인하"
+subjects["oop2"] = "이인하"
+subjects["statics"] = "최인하"
+
+var subject string
+var teacher string
+
+func main() {
+
+
+        for {
+ 
+                fmt.Println("과목명: ")
+                fmt.Scanln(&subject)
+
+        
+                fmt.Println("담당 교수: ")
+                fmt.Scanln(&teacher)
+
+                val, exists := subjects[&subject]
+
+                if !exists {
+                        println("수강신청 되었습니다.")
+                        break;
+                } else {
+                        println("해당 과목은 존재하지 않습니다.")
+                }
+
+                if key, val := range subjects {
+                        if key
+                }
+
+        }
+
+        for key, val := range subjects {
+                fmt.Println("과목명 : ", key)
+        }
+
+
+        return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var lookahead = 0;
+
+func K() {
+        if (lookahead==EOF)
+                ;
+        else {
+                S()
+	   match('\n')
+	   K()
+        }
+}
+
+func S() {
+        if (lookahead=='(') {
+                        match('('); S(); match(')'); S();
+        }
+        else
+                ;
+}
+
+func nexttoken() {
+        return getchar();
+}
+
+func match(var token) {
+        if (lookahead == token)
+                lookahead = nexttoken()
+        else
+                error(token)
+}
+
+func error(var c) {
+        fmt.Println("Sysntax Error : "+ c)
+        exit(-1)
+}
+
+func main() {
+        lookahead = nexttoken()
+        K()
+        return 0
+}
+
