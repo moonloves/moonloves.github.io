@@ -799,6 +799,7 @@ INT16U OSSemAccept(OS_EVENT* prevent) {
 > Earliest Deadline First(EDF)
 * dynamic priority
 * 매 task의 종료 시 다시 스케줄링하여 시간 내의 데드라인이 가장 근접한 태스크를 스케줄링
+<img src="{{ site.baseurl }}/images/feasibility2.jpg" width="30%" height="30%">
 * 해당 수식은 필요충분조건
 * 오버헤드가 비교적 크다는 단점
 * 거의 fully utilize, CPU의 사용률이 높다는 장점
