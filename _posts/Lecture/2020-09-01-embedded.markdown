@@ -793,5 +793,5 @@ INT16U OSSemAccept(OS_EVENT* prevent) {
 * 태스크의 주기가 짧을수록 더 높은 우선순위 가짐
 * time diagram을 주기들의 최소공배수까지 그리기가 어렵기 때문에, 수식 발견
 * Feasibility analysis
-<img src="{{ site.baseurl }}/images/basic/feasibility.png" width="30%" height="30%">
+<img src="{{ site.baseurl }}/images/feasibility.png" width="30%" height="30%">
 
