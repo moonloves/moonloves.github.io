@@ -32,11 +32,10 @@ RDP(Recursive Descent Parser) : 순환 재귀 하강
 이 결과가 구문 분석과 같다.
 
 이 재귀함수의 집합을 이용하면 구문 트리를 쉽게 만들 수 있다.
-<pre><code>
+<!--
 <K> ::= <S> '\n' <K> | EOF
 <S> ::\ '(' <S> ')'<S>} 
-</code></pre>
-
+-->
 <pre>
 <code>
 #include <iostream>
