@@ -186,111 +186,40 @@ void S() {
 
 
 
-
-
-
-package main
-
-import(
-	"fmt"
-)
-
-var subjects map[string]string
-subjects = make(map[string]string)
-subjects["p1"] = "김인하"
-subjects["oop2"] = "이인하"
-subjects["statics"] = "최인하"
-
-var subject string
-var teacher string
-
-func main() {
-
-
-        for {
- 
-                fmt.Println("과목명: ")
-                fmt.Scanln(&subject)
-
-        
-                fmt.Println("담당 교수: ")
-                fmt.Scanln(&teacher)
-
-                val, exists := subjects[&subject]
-
-                if !exists {
-                        println("수강신청 되었습니다.")
-                        break;
-                } else {
-                        println("해당 과목은 존재하지 않습니다.")
-                }
-
-                if key, val := range subjects {
-                        if key
-                }
-
-        }
-
-        for key, val := range subjects {
-                fmt.Println("과목명 : ", key)
-        }
-
-
-        return 0
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var lookahead = 0;
-
-func K() {
-        if (lookahead==EOF)
-                ;
-        else {
-                S()
-	   match('\n')
-	   K()
-        }
-}
-
-func S() {
-        if (lookahead=='(') {
-                        match('('); S(); match(')'); S();
-        }
-        else
-                ;
-}
-
-func nexttoken() {
-        return getchar();
-}
-
-func match(var token) {
-        if (lookahead == token)
-                lookahead = nexttoken()
-        else
-                error(token)
-}
-
-func error(var c) {
-        fmt.Println("Sysntax Error : "+ c)
-        exit(-1)
-}
-
-func main() {
-        lookahead = nexttoken()
-        K()
-        return 0
-}
-
+> 7주차
+학습목표
+1) 수식, 식, 표현식 (Expression)
+  * 값을 나타내는 표현... 프언에서는: <strong>자료</strong>
+  * 계산을 표현하는 기본적인 수단들로 구성이 됨(연산자, 피연산자 등)
+    * 단항: System.out.println(++a)
+    * 이항: System.out.println(a+2)
+      * LISP언어에서는 (= a 2) 라고도 씀(언어마다 차이가 있음)
+    * 삼항: String k = (i%2!=) ? "홀수":"짝수"
+    * sizeof, multiple(a, b)도 연산자가 될 수 있음
+2) 식의 평가
+   * 연산자의 평가순서 (Operator Evaluation)
+     * APL: 우결합("<-", 우에서 좌결합), 우선순위 동등 (예. a-b+c)
+       * c++
+       <img src="{{ site.baseurl }}/images/aplc++.png" width="30%" height="30%">
+       <img src="{{ site.baseurl }}/images/apl2c++.png" width="30%" height="30%">
+     * 좌결합
+       * JAVA
+       <img src="{{ site.baseurl }}/images/adljava.png" width="30%" height="30%">
+     * Ada: &#42;&#42;(지수연산자) But 결합법칙이 성립하지 않기 때문에 a&#42;&#42;b&#42;&#42;c : 신텍스 에러 발생
+   * 피연산자의 평가순서 (Operand Evaluation)
+3) 단락회로 평가 (Short Circuit Evaluation)
+   * 모든 operate를 수행하지 않더라도 값이 나오는 경우(a값이 영향을 미치지 않음)
+   * 예) (a || true) =  true, (a && true) = false
+4) 중복 연산자 (Overloaded Operators)
+   * 예) System.out.println("inha" + "univ") -> inha univ
+5) 문장 (Statements)
+   * 선언문
+     * 변수는 선언문을 통해 변수 이름과 타입을 바인딩해야 이용 가능
+     * 함수도 선언문을 통해 명시하여야 사용 가능
+   * 실행문
+     * 대입문 ( := Algol, Pascal, Ada 등 // = Cpp, Java, Go 등)
+       * 약타입 언어: 묵시적 형변환 일어남 ex)c++
+       * 강타입 언어: 형변환 일어나지 않음 ex)java, go
+     * 제어문
+       * 조건문 if, switch
+       * 반복문 for, while 등

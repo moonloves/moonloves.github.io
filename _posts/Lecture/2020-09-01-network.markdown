@@ -285,3 +285,4 @@ syn을 받고 syn ack 을 보내주고 클라이언트랑 새로운 소켓으로
     * 15.5 TCP segment format에 window size가 16bits로 헤더 내에 내장되어 있음
     * ack이 전송이 될 때 항상 window의 사이즈까지 같이 전송이 됨(rwnd)
     
+
