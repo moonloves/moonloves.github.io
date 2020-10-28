@@ -623,7 +623,7 @@ OSSemPost(sem); // 공유 변수에서 빠져나감
 * 만일 다른 task가 OSSemPend를 호출하더라도 sem = 0이기 때문에 blocking됨
 * 그래서 OSSemPend와 OSSemPost는 쌍으로 호출되어야 함
 * race condition 발생을 막아줌
-* 이로써 semaphore를 사용하여 critical section을 보장
+* 이로써 semaphore를 사용하여 critical section을 보장<br><br>
 2. 기타 task 간의 동기화
 * 다른 태스크로부터 signal을 받을 때까지 기다리는 프로그래밍을 할 때 사용
 <pre> <code>
@@ -779,18 +779,19 @@ INT16U OSSemAccept(OS_EVENT* prevent) {
   * Static priority: 각 태스크의 우선순위가 고정(오버헤드 적음)
   * Dynamic priority: 각 태스크의 우선순위가 바뀔 수 있음(오버헤드 많음)
 
-
+* task = 주기 + 실행시간
 
 > Scheduler
 * Rate-Monotomic Scheduling(RMS)
   * 주기가 짧은 task에게 우선순위를 높게
 * Earliest Deadline First Scheduling(EDF)
-  * 매순간 미래의 dead line을 살펴 dead line이 가장 근접한 task에게 우선순위 높게
+  * 매순간 미래의 dead line을 살펴 dead line이 가장 근접한 task에게 우선순위 높게 
 
 > Rate-Monotonic Scheduling(RMS)
 * static priority
 * 수행시간과 상관 없이, 오직 주기에 의하여 우선순위가 결정됨
 * 태스크의 주기가 짧을수록 더 높은 우선순위 가짐
+* CPU 이용률 측면에서는 EDF보다 좀 더 떨어짐
 * time diagram을 주기들의 최소공배수까지 그리기가 어렵기 때문에, 수식 발견
 * Feasibility analysis
 <img src="{{ site.baseurl }}/images/feasibility.png" width="30%" height="30%">
@@ -798,7 +799,7 @@ INT16U OSSemAccept(OS_EVENT* prevent) {
 
 > Earliest Deadline First(EDF)
 * dynamic priority
-* 매 task의 종료 시 다시 스케줄링하여 시간 내의 데드라인이 가장 근접한 태스크를 스케줄링
+* 매 task의 종료 시 다시 스케줄링하여 시간 내의 데드라인이 가장 근접한 태스크에게 우선순위를 부여
 <img src="{{ site.baseurl }}/images/feasibility2.jpg" width="30%" height="30%">
 * 해당 수식은 필요충분조건
 * 오버헤드가 비교적 크다는 단점
@@ -806,10 +807,22 @@ INT16U OSSemAccept(OS_EVENT* prevent) {
 
 > Priority Inversion
 * critical section에서 발생
-  * critical sectino이란 shared data가 접근되는 code의 segment로, 여러 태스크가 동시에 접근할 경우 race condition이 발생할 수 있으므로 semaphore를 통해 보호해야함
+  * critical section이란 shared data가 접근되는 code의 segment로, 여러 태스크가 동시에 접근할 경우 race condition이 발생할 수 있으므로 semaphore를 통해 보호해야함
 * RMS라는 가정 하에 발생
 * prioirty inversion이 발생할 때
   * 높은 우선순위 태스크가 낮은 우선순위 프로세스가 이미 소유하고 있는 공유 데이터 접근을 기다리면서 block됨
   * 이는 race condition을 없애기 위한 기본적인 매커니즘이므로 OK(문제되지 않음)
   * But 이 때 우선순위 중간인 태스크가 끼어들어서 우선순위 높은 태스크의 수행을 지연시키는 것이 문제
   * 우선순위 높은 태스크의 데드라인이 miss될 가능성이 높아지기 때문
+
+
+
+
+### Priority Inversion (임베디드 소프트웨어 8주차)
+
+> Prioirty inheritance protocol
+* 우선순위 상속 프로토콜
+
+
+> Priority ceiling protocol
+* 
